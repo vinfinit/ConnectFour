@@ -21,12 +21,18 @@ class Board extends Component {
 
   render() {
     return (
-      <Table bordered>
-        <thead></thead>
-        <tbody>
-          {this.state.board.map((row, i) => (<Row key={i} row={row} play={this.play.bind(this)}></Row>))}
-        </tbody>
-      </Table>
+      <section>
+        <div className={`navbar player_${this.state.winner}`}>
+          <button onClick={this.initGame.bind(this)} className="btn btn-light">New game</button>
+          {this.state.winner ? <div>Winner!</div> : null}
+        </div>
+        <Table bordered>
+          <thead></thead>
+          <tbody>
+            {this.state.board.map((row, i) => (<Row key={i} row={row} play={this.play.bind(this)}></Row>))}
+          </tbody>
+        </Table>
+      </section>
     )
   }
 

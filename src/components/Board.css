@@ -23,10 +23,14 @@ td:hover::after,
   z-index: -1;
 }
 
-td.player1 {
+.btn {
+  border-radius: 0;
+}
+
+.player_1 {
   background-color: #99dfd2;
 }
 
-td.player2 {
+.player_2 {
   background-color: #ffbd75;
 }
