@@ -40,6 +40,24 @@ class Board extends Component {
     this.initGame();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const state = this.state;
+
+    if (prevState.curPlayer === state.curPlayer && prevState.terminateState === state.terminateState) {
+      const curPlayer = this.state.curPlayer;
+      this.checkWinner()
+        .then(isWinner => {
+          if (isWinner) {
+            this.setState({
+              winner: curPlayer,
+              terminateState: true
+            })
+          }
+          this.togglePlayer();
+        })
+    }
+  }
+
   initGame() {
     const board = [...Array(this.props.rows).keys()].map(i => Array(this.props.cols).fill(0));
     this.setState({
@@ -50,26 +68,36 @@ class Board extends Component {
      });
   }
 
-  async play(columnIndex) {
+  async play(columnIndex, isDrop) {
     if (this.state.terminateState) return;
 
-    const board = this.state.board,
-      curPlayer = this.state.curPlayer;
-    for (let i = this.props.rows - 1; i >= 0; i--) {
-      if (!board[i][columnIndex]) {
-        board[i][columnIndex] = this.state.curPlayer;
-        this.setState({ board });
-        let isWinner = await this.checkWinner();
-        if (isWinner) {
-          this.setState({
-            winner: curPlayer,
-            terminateState: true
-          });
+    if (!isDrop) {
+      const board = this.state.board;
+      for (let i = this.props.rows - 1; i >= 0; i--) {
+        if (!board[i][columnIndex]) {
+          board[i][columnIndex] = this.state.curPlayer;
+          this.setState({ board });
           return;
         }
-        this.togglePlayer();
-        return;
       }
+    } else {
+      this.dropCell(columnIndex)
+    }
+  }
+
+  dropCell(columnIndex) {
+    const curPlayer = this.state.curPlayer;
+    const board = this.state.board;
+    const transposeBoard = board[0].map((col, i) => board.map(row => row[i]));
+
+    if (curPlayer === board[board.length - 1][columnIndex]) {
+      let row = transposeBoard[columnIndex];
+      row.unshift(0);
+      row.length -= 1;
+
+      this.setState({
+        board: transposeBoard[0].map((col, i) => transposeBoard.map(row => row[i]))
+      });
     }
   }
 
